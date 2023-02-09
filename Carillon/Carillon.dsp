@@ -1,6 +1,79 @@
 
 import("stdfaust.lib");
-import("music.lib");
+import ("music.lib");
+import("filter.lib");
+import("effect.lib");
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+//SHIMMER
+
+//Constrols
+//PS controls
+sm_envelope = hslider("envelope", 1, 0.1,3, 0.05);//parametric_controller(control, envelope, speed, depth)*shift
+sm_speed = hslider("speed", 0.1, 0.1, 10, 0.05);
+sm_depth = hslider("depth", 0, 0, 1, 0.05);
+sm_contrl = hslider("contrl",0.5, 0, 1, 0.05);
+sm_shift = hslider("shift", 0, -6, +6, 0.1)*2; //*2 needed to conform with parametric controller output
+//Reverb controls
+sm_size = hslider("size", 1, 1, 3, 0.05);
+sm_diffusion =  hslider("diffusion", 0.5, 0.1, 0.7, 0.05);
+sm_feedback =  hslider("feedback", 0, 0, 0.35, 0.05);
+sm_hf_damping = hslider("hf damping", 0.005, 0.005, 0.995, 0.005);
+//Global 
+sm_dry_wet = hslider("dry/wet", 0.5, 0, 1, 0.05);
+
+//Can be add to .lib
+mixer(mix) = _*(1 - mix),_*mix:>_;
+
+//Parametric controller, combinate signals from envelope follower and oscillator, can be added to .lib
+c_folower_colibration = 6;
+parametric_controller(mix, envelope_t, freq, depth) = (amp_follower(envelope_t):_*c_folower_colibration:_*depth,osc(freq)*0.5:_,_*depth):mixer(mix):_+0.5;
+
+//Can be moved to .lib too
+X = (_,_)<:(!,_,_,!);
+opf(a) = (_+_*(1-a)~@(1)*a); 
+allpass_with_fdelay(dt1,coef,dt2,dt2pos) = (_,_ <: (*(coef),_:+:@(dt1):fdelay(dt2,dt2pos)), -) ~ _ : (!,_);
+allpass(dt,fb) = (_,_ <: (*(fb),_:+:@(dt)), -) ~ _ : (!,_);
+dry_wet_mixer(c,x0,y0,x1,y1) = sel(c,x0,y0), sel(c,x1,y1)
+	with { 
+			sel(c,x,y) = (1-c)*x + c*y; 
+		 };
+dry_wet_mixer_mono(c,x0,x1) = y0,y1
+	with { 
+			y0 = (1-c)*x0;
+            y1 = c*x1;
+		 };
+
+APFB(dt1,fb1,dtv,dtvpos,dt2,fb2) = _:allpass_with_fdelay(dt1,fb1,dtv,dtvpos):allpass(dt2,fb2);
+
+//PS constants, can be changed to decrease effect delay 
+c_samples = 2048;
+c_xfade   = 1024;
+//PS implementation, copy-pasted from faust repository, see ./examples/pitch_shifter.dsp
+transpose (w, x, s, sig)  =
+	fdelay1s(d,sig)*fmin(d/x,1) + fdelay1s(d+w,sig)*(1-fmin(d/x,1))
+	   	with {
+			i = 1 - pow(2, s/12);
+			d = i : (+ : +(w) : fmod(_,w)) ~ _;
+	        };
+
+shimmer(x,y) = x,y:(_,_:
+	(_,X,_:(
+	(_*sm_feedback+_*0.3:>APFB(601*sm_size,0.7*sm_diffusion,50,49*(osc(1)+1)/2,613*sm_size,0.75*sm_diffusion)<:opf(sm_hf_damping)),
+    (_*sm_feedback+_*0.3:>APFB(2043*sm_size,0.75*sm_diffusion,50,49*(osc(1.5)+1)/2,2087*sm_size,0.75*sm_diffusion)<:opf(sm_hf_damping))
+	):X)~(
+	(_*sm_feedback:dcblockerat(80)
+	:@(4325)<:
+	APFB(2337*sm_size,0.7*sm_diffusion,50,49*(osc(0.7)+1)/2,2377*sm_size,0.4*sm_diffusion):@(2969)<:transpose(c_samples,c_xfade,	 
+    (x:parametric_controller(sm_contrl, sm_envelope, sm_speed, sm_depth):_*sm_shift))),
+	(_*sm_feedback:dcblockerat(80)
+	:@(4763)<:
+	APFB(1087*sm_size,0.7*sm_diffusion,50,49*(osc(1.3)+1)/2,1113*sm_size,0.4*sm_diffusion):@(3111)<:transpose(c_samples,c_xfade,	 			   
+	(y:parametric_controller(sm_contrl, sm_envelope, sm_speed, sm_depth):_*sm_shift)))))
+	//:dry_wet_mixer(dry_wet,x,_,y,_)
+    ;
+
 
 /* Control variables: */
 
@@ -19,22 +92,22 @@ amp0		= nentry("amplitude0", 0.167, 0, 1, 0.001);	// amplitude
 decay0		= nentry("decay0", 3.693, 0, 10, 0.001);	// decay time
 rq0		= nentry("rq0", 0.002, 0, 1, 0.0001);		// filter 1/Q
 // resonator #1
-hrm1		= nentry("harmonic1", 3.007, 0, 50, 0.001);	// harmonic
+hrm1		= nentry("harmonic1", 3.007*2, 0, 50, 0.001);	// harmonic
 amp1		= nentry("amplitude1", 0.083, 0, 1, 0.001);	// amplitude
 decay1		= nentry("decay1", 2.248, 0, 10, 0.001);	// decay time
 rq1		= nentry("rq1", 0.002, 0, 1, 0.0001);		// filter 1/Q
 // resonator #2
-hrm2		= nentry("harmonic2", 4.968, 0, 50, 0.001);	// harmonic
-amp2		= nentry("amplitude2", 0.087, 0, 1, 0.001);	// amplitude
+hrm2		= nentry("harmonic2", 4.968*2, 0, 50, 0.001);	// harmonic
+amp2		= nentry("amplitude2", 0.087*2, 0, 1, 0.001);	// amplitude
 decay2		= nentry("decay2", 2.828, 0, 10, 0.001);	// decay time
 rq2		= nentry("rq2", 0.002, 0, 1, 0.0001);		// filter 1/Q
 // resonator #3
-hrm3		= nentry("harmonic3", 8.994, 0, 50, 0.001);	// harmonic
+hrm3		= nentry("harmonic3", 8.994*2, 0, 50, 0.001);	// harmonic
 amp3		= nentry("amplitude3", 0.053, 0, 1, 0.001);	// amplitude
 decay3		= nentry("decay3", 3.364, 0, 10, 0.001);	// decay time
 rq3		= nentry("rq3", 0.002, 0, 1, 0.0001);		// filter 1/Q
 // resonator #4
-hrm4		= nentry("harmonic4", 12.006, 0, 50, 0.001);	// harmonic
+hrm4		= nentry("harmonic4", 12.006*2, 0, 50, 0.001);	// harmonic
 amp4		= nentry("amplitude4", 0.053, 0, 1, 0.001);	// amplitude
 decay4		= nentry("decay4", 2.488, 0, 10, 0.001);	// decay time
 rq4		= nentry("rq4", 0.002, 0, 1, 0.0001);		// filter 1/Q
@@ -118,16 +191,31 @@ env = hslider("v:[2]Carillon/[2]enveloppe",0.5,0.05,2,0.01);
 dur = hslider("v:[5]Echo/dur",0.7,0.020,1.000,0.01);
 fb = hslider("v:[5]Echo/fb",0.25,0,1,0.01);
 
+//LPG
+at = hslider("attack",0.001,0.001,1,0.001);
+rt = hslider("release",0.5,0.001,1,0.001);
+
+//Frequences
+fr1 = 415.3/2;
+fr2 = 493.88/2;
+fr3 = 554.37/2;
+fr4 = 659.26/2;
+fr5 = 830.61/2;
+fr6 = 1318.51/2;
+fr7 = 1760/2;
+fr8 = 2217.46/2;
+
+
 process = 
 ///*HIVER*/
-((excitator(gate1)*gain <: resonators(415.3/2,gate1):/* fi.lowpass(3,2500) :*/ ef.echo(1.5,dur,fb) :co.limiter_1176_R4_mono)<: dm.dattorro_rev_demo:>_),
-((excitator(gate2)*gain <: resonators(493.88/2,gate2):/* fi.lowpass(3,2500) :*/ ef.echo(1.5,dur,fb) :co.limiter_1176_R4_mono)<: dm.dattorro_rev_demo:>_),
-((excitator(gate3)*gain <: resonators(554.37/2,gate3):/* fi.lowpass(3,2500) :*/ ef.echo(1.5,dur,fb) :co.limiter_1176_R4_mono)<: dm.dattorro_rev_demo:>_),
-((excitator(gate4)*gain <: resonators(659.26/2,gate4):/* fi.lowpass(3,2500) :*/ ef.echo(1.5,dur,fb) :co.limiter_1176_R4_mono)<: dm.dattorro_rev_demo:>_),
-((excitator(gate5)*gain <: resonators(830.61/2,gate5) :/* fi.lowpass(3,2500):*/ ef.echo(1.5,dur,fb) :co.limiter_1176_R4_mono)<: dm.dattorro_rev_demo:>_),
-((excitator(gate6)*gain <: resonators(1318.51/2,gate6):/* fi.lowpass(3,2500) :*/ ef.echo(1.5,dur,fb) :co.limiter_1176_R4_mono)<: dm.dattorro_rev_demo:>_),
-((excitator(gate7)*gain <: resonators(1760/2,gate7) :/* fi.lowpass(3,2500) :*/ ef.echo(1.5,dur,fb) :co.limiter_1176_R4_mono)<: dm.dattorro_rev_demo:>_),
-((excitator(gate8)*gain <: resonators(2217.46/2,gate8) :/* fi.lowpass(3,2500) :*/ ef.echo(1.5,dur,fb) :co.limiter_1176_R4_mono)<: dm.dattorro_rev_demo:>_)
+((excitator(gate1)*gain <: resonators(fr1,gate1)) <: (_*en.ar(at,rt,gate1),_*fi.lowpass(3,fr1)):> ef.echo(1.5,dur,fb) :co.limiter_1176_R4_mono <: shimmer(_,_),_ : _,!,_ : dry_wet_mixer_mono(sm_dry_wet,_,_) :>_),
+((excitator(gate2)*gain <: resonators(fr2,gate2)) <: (_*en.ar(at,rt,gate2),_*fi.lowpass(3,fr2)):> ef.echo(1.5,dur,fb) :co.limiter_1176_R4_mono <: shimmer(_,_),_ : _,!,_ : dry_wet_mixer_mono(sm_dry_wet,_,_) :>_),
+((excitator(gate3)*gain <: resonators(fr3,gate3)) <: (_*en.ar(at,rt,gate3),_*fi.lowpass(3,fr3)):> ef.echo(1.5,dur,fb) :co.limiter_1176_R4_mono <: shimmer(_,_),_ : _,!,_ : dry_wet_mixer_mono(sm_dry_wet,_,_) :>_),
+((excitator(gate4)*gain <: resonators(fr4,gate4)) <: (_*en.ar(at,rt,gate4),_*fi.lowpass(3,fr4)):> ef.echo(1.5,dur,fb) :co.limiter_1176_R4_mono <: shimmer(_,_),_ : _,!,_ : dry_wet_mixer_mono(sm_dry_wet,_,_) :>_),
+((excitator(gate5)*gain <: resonators(fr5,gate5)) <: (_*en.ar(at,rt,gate5),_*fi.lowpass(3,fr5)):> ef.echo(1.5,dur,fb) :co.limiter_1176_R4_mono <: shimmer(_,_),_ : _,!,_ : dry_wet_mixer_mono(sm_dry_wet,_,_) :>_),
+((excitator(gate6)*gain <: resonators(fr6,gate6)) <: (_*en.ar(at,rt,gate6),_*fi.lowpass(3,fr6)):> ef.echo(1.5,dur,fb) :co.limiter_1176_R4_mono <: shimmer(_,_),_ : _,!,_ : dry_wet_mixer_mono(sm_dry_wet,_,_) :>_),
+((excitator(gate7)*gain <: resonators(fr7,gate7)) <: (_*en.ar(at,rt,gate7),_*fi.lowpass(3,fr7)):> ef.echo(1.5,dur,fb) :co.limiter_1176_R4_mono <: shimmer(_,_),_ : _,!,_ : dry_wet_mixer_mono(sm_dry_wet,_,_) :>_),
+((excitator(gate8)*gain <: resonators(fr8,gate8)) <: (_*en.ar(at,rt,gate8),_*fi.lowpass(3,fr8)):> ef.echo(1.5,dur,fb) :co.limiter_1176_R4_mono <: shimmer(_,_),_ : _,!,_ : dry_wet_mixer_mono(sm_dry_wet,_,_) :>_)
 
 /*ETE*/
 //( pm.standardBell(strikepos,cutoff,5.5,1.5,gate1)*en.smoothEnvelope(env,gate1) : ef.transpose(10000,10000,shift): ef.echo(1.5,dur,fb) :co.limiter_1176_R4_mono ),
