@@ -10,18 +10,18 @@ import("effect.lib");
 
 //Constrols
 //PS controls
-sm_envelope = hslider("envelope", 1, 0.1,3, 0.05);//parametric_controller(control, envelope, speed, depth)*shift
-sm_speed = hslider("speed", 0.1, 0.1, 10, 0.05);
-sm_depth = hslider("depth", 0, 0, 1, 0.05);
-sm_contrl = hslider("contrl",0.5, 0, 1, 0.05);
-sm_shift = hslider("shift", 0, -6, +6, 0.1)*2; //*2 needed to conform with parametric controller output
+sm_envelope = hslider("v:[1]EFFECTS/h:SHIMMER/envelope[style:knob]", 1, 0.1,3, 0.05);//parametric_controller(control, envelope, speed, depth)*shift
+sm_speed = hslider("v:[1]EFFECTS/h:SHIMMER/speed[style:knob]", 0.1, 0.1, 10, 0.05);
+sm_depth = hslider("v:[1]EFFECTS/h:SHIMMER/depth[style:knob]", 0, 0, 1, 0.05);
+sm_contrl = hslider("v:[1]EFFECTS/h:SHIMMER/contrl[style:knob]",0.5, 0, 1, 0.05);
+sm_shift = hslider("v:[1]EFFECTS/h:SHIMMER/shift[style:knob]", 0, -6, +6, 0.1)*2; //*2 needed to conform with parametric controller output
 //Reverb controls
-sm_size = hslider("size", 1, 1, 3, 0.05);
-sm_diffusion =  hslider("diffusion", 0.5, 0.1, 0.7, 0.05);
-sm_feedback =  hslider("feedback", 0, 0, 0.35, 0.05);
-sm_hf_damping = hslider("hf damping", 0.005, 0.005, 0.995, 0.005);
+sm_size = hslider("v:[1]EFFECTS/h:SHIMMER/size[style:knob]", 1, 1, 3, 0.05);
+sm_diffusion =  hslider("v:[1]EFFECTS/h:SHIMMER/diffusion[style:knob]", 0.5, 0.1, 0.7, 0.05);
+sm_feedback =  hslider("v:[1]EFFECTS/h:SHIMMER/feedback[style:knob]", 0, 0, 0.35, 0.05);
+sm_hf_damping = hslider("v:[1]EFFECTS/h:SHIMMER/hf damping[style:knob]", 0.005, 0.005, 0.995, 0.005);
 //Global 
-sm_dry_wet = hslider("dry/wet", 0.5, 0, 1, 0.05);
+sm_dry_wet = hslider("v:[1]EFFECTS/h:SHIMMER/dry/wet[style:knob]", 0.5, 0, 1, 0.05);
 
 //Can be add to .lib
 mixer(mix) = _*(1 - mix),_*mix:>_;
@@ -41,8 +41,8 @@ dry_wet_mixer(c,x0,y0,x1,y1) = sel(c,x0,y0), sel(c,x1,y1)
 		 };
 dry_wet_mixer_mono(c,x0,x1) = y0,y1
 	with { 
-			y0 = (1-c)*x0;
-            y1 = c*x1;
+			y1 = (1-c)*x0;
+            y0 = c*x1;
 		 };
 
 APFB(dt1,fb1,dtv,dtvpos,dt2,fb2) = _:allpass_with_fdelay(dt1,fb1,dtv,dtvpos):allpass(dt2,fb2);
@@ -174,26 +174,26 @@ chime = excitator(gate)*gain <: resonators(freq, gate)
 29 semitones     ||||        20       
 */
 
-gate1 = button("h:Gates/gate1");
-gate2 = button("h:Gates/gate2");
-gate3 = button("h:Gates/gate3");
-gate4 = button("h:Gates/gate4");
-gate5 = button("h:Gates/gate5");
-gate6 = button("h:Gates/gate6");
-gate7 = button("h:Gates/gate7");
-gate8 = button("h:Gates/gate8");
+gate1 = button("v:[0]MODELES/h:[1]Gates/gate1");
+gate2 = button("v:[0]MODELES/h:[1]Gates/gate2");
+gate3 = button("v:[0]MODELES/h:[1]Gates/gate3");
+gate4 = button("v:[0]MODELES/h:[1]Gates/gate4");
+gate5 = button("v:[0]MODELES/h:[1]Gates/gate5");
+gate6 = button("v:[0]MODELES/h:[1]Gates/gate6");
+gate7 = button("v:[0]MODELES/h:[1]Gates/gate7");
+gate8 = button("v:[0]MODELES/h:[1]Gates/gate8");
 
 shift = hslider("v:[2]Carillon/[3]shift[unit: semitones]", 0, -5, +5, 1);
 strikepos = hslider("v:[2]Carillon/[1]strikepos",6,0,6,1);
 cutoff = hslider("v:[2]Carillon/[1]cutoff",250,20,1000,1);
 env = hslider("v:[2]Carillon/[2]enveloppe",0.5,0.05,2,0.01);
 
-dur = hslider("v:[5]Echo/dur",0.7,0.020,1.000,0.01);
-fb = hslider("v:[5]Echo/fb",0.25,0,1,0.01);
+dur = hslider("v:[1]EFFECTS/v:[5]Echo/dur",0.7,0.020,1.000,0.01);
+fb = hslider("v:[1]EFFECTS/v:[5]Echo/fb",0.15,0,1,0.01);
 
 //LPG
-at = hslider("attack",0.001,0.001,1,0.001);
-rt = hslider("release",0.5,0.001,1,0.001);
+at = hslider("v:[2]AR/attack",0.001,0.001,1,0.001);
+rt = hslider("v:[2]AR/release",0.5,0.001,1,0.001);
 
 //Frequences
 fr1 = 415.3/2;
