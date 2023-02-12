@@ -87,30 +87,35 @@ pan		= hslider("pan", 0.5, 0, 1, 0.01);		// %
 xdecay		= nentry("decay", 0.01, 0, 1, 0.001);
 
 // resonator #0
-hrm0		= nentry("harmonic0", 1, 0, 50, 0.001);		// harmonic
-amp0		= nentry("amplitude0", 0.167, 0, 1, 0.001);	// amplitude
-decay0		= nentry("decay0", 3.693, 0, 10, 0.001);	// decay time
-rq0		= nentry("rq0", 0.002, 0, 1, 0.0001);		// filter 1/Q
+hrm0		= nentry("harmonic0[style:knob]", 1, 1, 50, 0.001);		// harmonic
+amp0		= nentry("amplitude0[style:knob]", 0.14, 0, 1, 0.001);	// amplitude
+decay0		= nentry("decay0[style:knob]", 0.793, 0, 10, 0.001);	// decay time
+rq0		= nentry("rq0[style:knob]", 0.002, 0.001, 1, 0.0001);		// filter 1/Q
 // resonator #1
-hrm1		= nentry("harmonic1", 3.007*2, 0, 50, 0.001);	// harmonic
-amp1		= nentry("amplitude1", 0.083, 0, 1, 0.001);	// amplitude
-decay1		= nentry("decay1", 2.248, 0, 10, 0.001);	// decay time
-rq1		= nentry("rq1", 0.002, 0, 1, 0.0001);		// filter 1/Q
+hrm1		= nentry("harmonic1[style:knob]", 2.004, 1, 50, 0.001);	// harmonic
+amp1		= nentry("amplitude1[style:knob]", 0.123, 0, 1, 0.001);	// amplitude
+decay1		= nentry("decay1[style:knob]", 2.248, 0, 10, 0.001);	// decay time
+rq1		= nentry("rq1[style:knob]", 0.002, 0.001, 1, 0.0001);		// filter 1/Q
 // resonator #2
-hrm2		= nentry("harmonic2", 4.968*2, 0, 50, 0.001);	// harmonic
-amp2		= nentry("amplitude2", 0.087*2, 0, 1, 0.001);	// amplitude
-decay2		= nentry("decay2", 2.828, 0, 10, 0.001);	// decay time
-rq2		= nentry("rq2", 0.002, 0, 1, 0.0001);		// filter 1/Q
+hrm2		= nentry("harmonic2[style:knob]", 2.992, 1, 50, 0.001);	// harmonic
+amp2		= nentry("amplitude2[style:knob]", 0.05, 0, 1, 0.001);	// amplitude
+decay2		= nentry("decay2[style:knob]", 2.928, 0, 10, 0.001);	// decay time
+rq2		= nentry("rq2[style:knob]", 0.005, 00.001, 1, 0.0001);		// filter 1/Q
 // resonator #3
-hrm3		= nentry("harmonic3", 8.994*2, 0, 50, 0.001);	// harmonic
-amp3		= nentry("amplitude3", 0.053, 0, 1, 0.001);	// amplitude
-decay3		= nentry("decay3", 3.364, 0, 10, 0.001);	// decay time
-rq3		= nentry("rq3", 0.002, 0, 1, 0.0001);		// filter 1/Q
+hrm3		= nentry("harmonic3[style:knob]", 12.008, 1, 50, 0.001);	// harmonic
+amp3		= nentry("amplitude3[style:knob]", 0.083, 0, 1, 0.001);	// amplitude 0.053, 0, 1, 0.001
+decay3		= nentry("decay3[style:knob]", 0.2, 0, 10, 0.001);	// decay time
+rq3		= nentry("rq3[style:knob]", 0.003, 00.001, 1, 0.0001);		// filter 1/Q
 // resonator #4
-hrm4		= nentry("harmonic4", 12.006*2, 0, 50, 0.001);	// harmonic
-amp4		= nentry("amplitude4", 0.053, 0, 1, 0.001);	// amplitude
-decay4		= nentry("decay4", 2.488, 0, 10, 0.001);	// decay time
-rq4		= nentry("rq4", 0.002, 0, 1, 0.0001);		// filter 1/Q
+hrm4		= nentry("harmonic4[style:knob]", 16.006, 1, 50, 0.001);	// harmonic
+amp4		= nentry("amplitude4[style:knob]", 0.013, 0, 1, 0.001);	// amplitude 0.053, 0, 1, 0.001
+decay4		= nentry("decay4[style:knob]", 2, 0, 10, 0.001);	// decay time
+rq4		= nentry("rq4[style:knob]", 0.001, 0.001, 1, 0.0001);		// filter 1/Q
+// resonator #5
+hrm5		= nentry("harmonic5[style:knob]", 3.995, 1, 50, 0.001);	// harmonic
+amp5		= nentry("amplitude5[style:knob]", 0.06, 0, 1, 0.001);	// amplitude 0.053, 0, 1, 0.001
+decay5		= nentry("decay5[style:knob]", 7.5, 0, 10, 0.001);	// decay time
+rq5		= nentry("rq5[style:knob]", 0.001, 0.001, 1, 0.0001);		// filter 1/Q
 
 // frequency, gain, gate
 freq		= nentry("freq", 440, 20, 20000, 1);		// Hz
@@ -154,14 +159,13 @@ resonators(f,t)	= resonator(f,t,0,hrm0,amp0,decay0,rq0)
 		+ resonator(f,t,1,hrm1,amp1,decay1,rq1)
 		+ resonator(f,t,2,hrm2,amp2,decay2,rq2)
 		+ resonator(f,t,3,hrm3,amp3,decay3,rq3)
-		+ resonator(f,t,4,hrm4,amp4,decay4,rq4);
+		+ resonator(f,t,4,hrm4,amp4,decay4,rq4)
+        + resonator(f,t,5,hrm5,amp5,decay5,rq5);
 
 /* The synth. */
 
 chime = excitator(gate)*gain <: resonators(freq, gate)
 		;//: vgroup("3-master", *(vol) : panner(pan));
-
-
 
 /*     ETE       ||||      HIVER            
 0                ||||        0
@@ -189,33 +193,43 @@ cutoff = hslider("v:[2]Carillon/[1]cutoff",250,20,1000,1);
 env = hslider("v:[2]Carillon/[2]enveloppe",0.5,0.05,2,0.01);
 
 dur = hslider("v:[1]EFFECTS/v:[5]Echo/dur",0.7,0.020,1.000,0.01);
-fb = hslider("v:[1]EFFECTS/v:[5]Echo/fb",0.15,0,1,0.01);
+fb = hslider("v:[1]EFFECTS/v:[5]Echo/fb",0,0,1,0.01);
 
 //LPG
-at = hslider("v:[2]AR/attack",0.001,0.001,1,0.001);
-rt = hslider("v:[2]AR/release",0.5,0.001,1,0.001);
+at = hslider("v:[2]AR/attack",0.0001,0.0001,1,0.001);
+rt = hslider("v:[2]AR/release",13,0.001,15,0.001);
 
 //Frequences
-fr1 = 415.3/2;
-fr2 = 493.88/2;
-fr3 = 554.37/2;
-fr4 = 659.26/2;
-fr5 = 830.61/2;
-fr6 = 1318.51/2;
-fr7 = 1760/2;
-fr8 = 2217.46/2;
+fr1 = 110;
+fr2 = 126;
+fr3 = 156;
+fr4 = 210;
+fr5 = 250;
+fr6 = 319;
+fr7 = 333;
+fr8 = 420;
+
+frf1 = hslider("frf1",3000,20,6000,1);
+frf2 = hslider("frf2",3000,20,6000,1);
+frf3 = hslider("frf3",3000,20,6000,1);
+frf4 = hslider("frf4",3000,20,6000,1);
+frf5 = hslider("frf5",3000,20,6000,1);
+frf6 = hslider("frf6",3000,20,6000,1);
+frf7 = hslider("frf7",3000,20,6000,1);
+frf8 = hslider("frf8",3000,20,6000,1);
+
 
 
 process = 
 ///*HIVER*/
-((excitator(gate1)*gain <: resonators(fr1,gate1)) <: (_*en.ar(at,rt,gate1),_*fi.lowpass(3,fr1)):> ef.echo(1.5,dur,fb) :co.limiter_1176_R4_mono <: shimmer(_,_),_ : _,!,_ : dry_wet_mixer_mono(sm_dry_wet,_,_) :>_),
-((excitator(gate2)*gain <: resonators(fr2,gate2)) <: (_*en.ar(at,rt,gate2),_*fi.lowpass(3,fr2)):> ef.echo(1.5,dur,fb) :co.limiter_1176_R4_mono <: shimmer(_,_),_ : _,!,_ : dry_wet_mixer_mono(sm_dry_wet,_,_) :>_),
-((excitator(gate3)*gain <: resonators(fr3,gate3)) <: (_*en.ar(at,rt,gate3),_*fi.lowpass(3,fr3)):> ef.echo(1.5,dur,fb) :co.limiter_1176_R4_mono <: shimmer(_,_),_ : _,!,_ : dry_wet_mixer_mono(sm_dry_wet,_,_) :>_),
-((excitator(gate4)*gain <: resonators(fr4,gate4)) <: (_*en.ar(at,rt,gate4),_*fi.lowpass(3,fr4)):> ef.echo(1.5,dur,fb) :co.limiter_1176_R4_mono <: shimmer(_,_),_ : _,!,_ : dry_wet_mixer_mono(sm_dry_wet,_,_) :>_),
-((excitator(gate5)*gain <: resonators(fr5,gate5)) <: (_*en.ar(at,rt,gate5),_*fi.lowpass(3,fr5)):> ef.echo(1.5,dur,fb) :co.limiter_1176_R4_mono <: shimmer(_,_),_ : _,!,_ : dry_wet_mixer_mono(sm_dry_wet,_,_) :>_),
-((excitator(gate6)*gain <: resonators(fr6,gate6)) <: (_*en.ar(at,rt,gate6),_*fi.lowpass(3,fr6)):> ef.echo(1.5,dur,fb) :co.limiter_1176_R4_mono <: shimmer(_,_),_ : _,!,_ : dry_wet_mixer_mono(sm_dry_wet,_,_) :>_),
-((excitator(gate7)*gain <: resonators(fr7,gate7)) <: (_*en.ar(at,rt,gate7),_*fi.lowpass(3,fr7)):> ef.echo(1.5,dur,fb) :co.limiter_1176_R4_mono <: shimmer(_,_),_ : _,!,_ : dry_wet_mixer_mono(sm_dry_wet,_,_) :>_),
-((excitator(gate8)*gain <: resonators(fr8,gate8)) <: (_*en.ar(at,rt,gate8),_*fi.lowpass(3,fr8)):> ef.echo(1.5,dur,fb) :co.limiter_1176_R4_mono <: shimmer(_,_),_ : _,!,_ : dry_wet_mixer_mono(sm_dry_wet,_,_) :>_)
+((excitator(gate1)*gain:fi.lowpass(1,frf1) <: resonators(fr1,gate1))*0.5 <: ((_*en.ar(at,rt,gate1)),(_:fi.lowpass(1,180)))/*:> ef.echo(1.5,dur,fb)*/ :>co.limiter_1176_R4_mono /*<: shimmer(_,_),_ : _,!,_ : dry_wet_mixer_mono(sm_dry_wet,_,_) */:>_),
+((excitator(gate2)*gain:fi.lowpass(1,frf2) <: resonators(fr2,gate2))*0.5 <: ((_*en.ar(at,rt,gate2)),(_:fi.lowpass(1,180)))/*:> ef.echo(1.5,dur,fb)*/ :>co.limiter_1176_R4_mono /*<: shimmer(_,_),_ : _,!,_ : dry_wet_mixer_mono(sm_dry_wet,_,_) */:>_),
+((excitator(gate3)*gain:fi.lowpass(1,frf3) <: resonators(fr3,gate3))*0.5 <: ((_*en.ar(at,rt,gate3)),(_:fi.lowpass(1,180)))/*:> ef.echo(1.5,dur,fb)*/ :>co.limiter_1176_R4_mono /*<: shimmer(_,_),_ : _,!,_ : dry_wet_mixer_mono(sm_dry_wet,_,_) */:>_),
+((excitator(gate4)*gain:fi.lowpass(1,frf4) <: resonators(fr4,gate4))*0.5 <: ((_*en.ar(at,rt,gate4)),(_:fi.lowpass(1,180)))/*:> ef.echo(1.5,dur,fb)*/ :>co.limiter_1176_R4_mono /*<: shimmer(_,_),_ : _,!,_ : dry_wet_mixer_mono(sm_dry_wet,_,_) */:>_),
+((excitator(gate5)*gain:fi.lowpass(1,frf5) <: resonators(fr5,gate5))*0.5 <: ((_*en.ar(at,rt,gate5)),(_:fi.lowpass(1,180)))/*:> ef.echo(1.5,dur,fb)*/ :>co.limiter_1176_R4_mono /*<: shimmer(_,_),_ : _,!,_ : dry_wet_mixer_mono(sm_dry_wet,_,_) */:>_),
+((excitator(gate6)*gain:fi.lowpass(1,frf6) <: resonators(fr6,gate6))*0.5 <: ((_*en.ar(at,rt,gate6)),(_:fi.lowpass(1,180)))/*:> ef.echo(1.5,dur,fb)*/ :>co.limiter_1176_R4_mono /*<: shimmer(_,_),_ : _,!,_ : dry_wet_mixer_mono(sm_dry_wet,_,_) */:>_),
+((excitator(gate7)*gain:fi.lowpass(1,frf7) <: resonators(fr7,gate7))*0.5 <: ((_*en.ar(at,rt,gate7)),(_:fi.lowpass(1,180)))/*:> ef.echo(1.5,dur,fb)*/ :>co.limiter_1176_R4_mono /*<: shimmer(_,_),_ : _,!,_ : dry_wet_mixer_mono(sm_dry_wet,_,_) */:>_),
+((excitator(gate8)*gain:fi.lowpass(1,frf8) <: resonators(fr8,gate8))*0.5 <: ((_*en.ar(at,rt,gate8)),(_:fi.lowpass(1,180)))/*:> ef.echo(1.5,dur,fb)*/ :>co.limiter_1176_R4_mono /*<: shimmer(_,_),_ : _,!,_ : dry_wet_mixer_mono(sm_dry_wet,_,_) */:>_)
 
 /*ETE*/
 //( pm.standardBell(strikepos,cutoff,5.5,1.5,gate1)*en.smoothEnvelope(env,gate1) : ef.transpose(10000,10000,shift): ef.echo(1.5,dur,fb) :co.limiter_1176_R4_mono ),
