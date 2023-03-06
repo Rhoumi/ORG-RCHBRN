@@ -2,15 +2,10 @@
 #-*- coding: utf-8 -*-
 
 from pyModbusTCP.client import ModbusClient
-from datetime import datetime, time
 import time
-import ephem
 from threading import Thread, Lock
-import os
-import random
 from pythonosc.udp_client import SimpleUDPClient
-import psycopg2
-from config import config
+
 
 #variables automate
 SERVER_HOST = "10.10.10.3"
@@ -186,11 +181,6 @@ def lumen_thread():
 def sendToNovus():
     c = ModbusClient(host=SERVER_HOST, port=SERVER_PORT, unit_id=UNIT_ID, auto_open=True, auto_close=True)
 
-#fonction de redémarrage de la machine
-def restartComputer():
-    
-    os.system("shutdown -t 1 -r -f")
-            
 # fonction principale
 def main():
 
